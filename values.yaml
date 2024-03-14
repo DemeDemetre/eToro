@@ -1,0 +1,71 @@
+# Default values for simple-web-helmchart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: acrinterview.azurecr.io/simple-web
+  pullPolicy: "Always"
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+namespace: demetre
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: 
+    kubernetes.io/ingress.class: nginx  
+  hosts:
+    - host: ""
+      paths:
+        - path: /demetre/(.*)
+          pathType: Prefix
+          backend:
+              service:
+                name: web-simple-web-helmchart
+                port:
+                  number: 80
+
+# HPA configuration          
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  #targetMemoryUtilizationPercentage: 80
+
+# Keda configuration
+scaledObject: 
+  enabled: true 
+  desiredReplicas: 10 
+  cronSchedule:
+    timezone: Europe/Paris
+    start: 00 08 * * 1-5
+    end: 00 12 * * 1-5
+
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+  

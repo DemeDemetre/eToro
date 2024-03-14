@@ -1,0 +1,19 @@
+{{- if .Values.scaledObject }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "simple-web-helmchart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  maxReplicaCount: 10   
+  minReplicaCount: 2
+  scaleTargetRef:
+    name: {{ include "simple-web-helmchart.fullname" . }}
+  triggers:
+    - type: cron
+      metadata:
+        timezone: {{ .Values.scaledObject.cronSchedule.timezone }}
+        start: {{ .Values.scaledObject.cronSchedule.start }}
+        end: {{ .Values.scaledObject.cronSchedule.end }}
+        desiredReplicas: "{{ .Values.scaledObject.desiredReplicas }}"
+{{- end }}
