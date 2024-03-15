@@ -1,5 +1,10 @@
 pipeline {
     agent any
+        environment {
+        HELM_CHART_PATH = '/var/lib/jenkins/workspace/eToro'
+        HELM_VALUES_PATH = '/var/lib/jenkins/workspace/eToro/values.yaml'
+        KUBE_NAMESPACE = 'demetre'
+    }
 
     stages {
         stage('checkout') {
@@ -14,7 +19,7 @@ pipeline {
         }
         stage('Deploy') {
            steps {    
-            sh 'helm upgrade simple-web --install /home/azureuser/simple-web -f /home/azureuser/simple-web/values.yaml -n demetre'
+            sh 'helm upgrade simple-web --install $HELM_CHART_PATH -f $HELM_VALUES_PATH -n $KUBE_NAMESPACE'
            }
         }
     }
